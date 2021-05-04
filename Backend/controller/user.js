@@ -1,6 +1,12 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+
 const bcrypt = require("bcrypt");
+/**Hash le mot de passe en BDD avec Bcrypt */
+
+/*__CRUD de l'authentification__ */
+
+/**Post user */
 exports.signup = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
@@ -16,6 +22,7 @@ exports.signup = (req, res, next) => {
     })
     .catch((error) => res.status(500).json({ error }));
 };
+/**Get user */
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
@@ -31,6 +38,7 @@ exports.login = (req, res, next) => {
           res.status(200).json({
             userId: user._id,
             token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
+              //on passe un JSON Web Token (JWT) pour authentifier et éviter de faire des requetes sur le profil
               expiresIn: "24h",
             }),
           });

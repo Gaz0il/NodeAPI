@@ -3,6 +3,9 @@ const fs = require("fs");
 const { request } = require("http");
 const user = require("../models/user");
 
+/*__CRUD__*/
+
+/*___Spé Métier: créer une sauce  à 0 `likes & dislikes` et des array vides___*/
 exports.createSauce = (req, res, next) => {
   const sauceObjet = JSON.parse(req.body.sauce);
   delete sauceObjet._id;
@@ -22,7 +25,7 @@ exports.createSauce = (req, res, next) => {
     .then(() => res.status(201).json({ message: "objet enregistré !" }))
     .catch((error) => res.status(400).json({ error }));
 };
-
+/*___Spé Métier: modifier une sauce___*/
 exports.updateSauce = (req, res, next) => {
   const sauceObject = req.file
     ? {
@@ -39,12 +42,13 @@ exports.updateSauce = (req, res, next) => {
     .then(() => res.status(200).json({ message: "Objet modifié !" }))
     .catch((error) => res.status(400).json({ error }));
 };
+/*___Spé Métier: obtenir une sauce___*/
 exports.getOneSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => res.status(200).json(sauce))
     .catch((error) => res.status(404).json({ error }));
 };
-
+/*___Spé Métier: supprimer une sauce___*/
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
@@ -57,22 +61,25 @@ exports.deleteSauce = (req, res, next) => {
     })
     .catch((error) => res.status(500).json({ error }));
 };
+/*___Spé Métier:  Obtenir les sauces___*/
 exports.getAllSauce = (req, res, next) => {
   Sauce.find()
     .then((sauce) => res.status(200).json(sauce))
     .catch((error) => res.status(404).json({ error }));
 };
+
+/*___Spé Métier: Gestion du likes___*/
+/**Trois cas à prendre en charge via un switch case */
+
 exports.like = (req, res, next) => {
   const userId = req.body.userId;
 
   switch (req.body.like) {
-    //0,1,-1 cases:
-    //0 increment and decrement
-    //1 => likes
-    //-1 => dislikes
-    case 0:
+    case 0: // like = 0
       Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
+          //on recherche le user dans l'array des userslikes
+          // si oui on met à jour à la sauce: décremente like et on retire le userID de l'array
           if (sauce.usersLiked.find((user) => user === userId)) {
             Sauce.updateOne(
               { _id: req.params.id },
@@ -82,6 +89,8 @@ exports.like = (req, res, next) => {
               }
             );
           }
+          //on recherche le user dans l'array des usersDislikes
+          // si oui on met à jour à la sauce: decrement like et on retire le userID de l'array
           if (sauce.usersDisliked.find((user) => user === userId)) {
             sauce.updateOne(
               { _id: req.params.id },
@@ -96,7 +105,9 @@ exports.like = (req, res, next) => {
           res.status(201).json({ message: "vote enregistré." });
         });
       break;
-    case 1:
+    case 1: // like = 1
+      //on incremente le like
+      //on ajoute l'utilisateur à l'array usersLiked
       {
         Sauce.updateOne(
           { _id: req.params.id },
@@ -109,7 +120,9 @@ exports.like = (req, res, next) => {
         });
       }
       break;
-    case -1:
+    case -1: //like = -1
+      //on incremente le dislike
+      //on ajoute l'utilisateur à l'array usersDisliked
       Sauce.updateOne(
         { _id: req.params.id },
         {

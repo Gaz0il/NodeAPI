@@ -29,11 +29,13 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+/** Pour limiter la surcharge des requetes (DDOS) */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
 });
-app.use(helmet());
+app.use(helmet()); // ecure your Express apps by setting various HTTP headers
 app.use(limiter);
 app.use(bodyParser.json());
 app.use("/api/sauces", sauceRoutes);
