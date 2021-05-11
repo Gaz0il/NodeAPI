@@ -90,7 +90,7 @@ exports.like = (req, res, next) => {
             );
           }
           //on recherche le user dans l'array des usersDislikes
-          // si oui on met à jour à la sauce: decrement like et on retire le userID de l'array
+          // si oui on met à jour à la sauce: decrement dislike et on retire le userID de l'array
           if (sauce.usersDisliked.find((user) => user === userId)) {
             sauce.updateOne(
               { _id: req.params.id },
