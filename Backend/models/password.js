@@ -4,7 +4,7 @@ const passwordValidator = require("password-validator");
 var passwordSchema = new passwordValidator();
 
 // Add properties to it
-schema
+passwordSchema
   .is()
   .min(8) // Minimum length 8
   .is()
